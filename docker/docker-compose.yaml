@@ -409,6 +409,27 @@ services:
     volumes:
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
+      - ../api/controllers:/app/api/controllers
+      - ../api/models:/app/api/models
+      - ../api/services:/app/api/services
+      - ../api/libs:/app/api/libs
+      - ../api/core:/app/api/core
+      - ../api/events:/app/api/events
+      - ../api/extensions:/app/api/extensions
+      - ../api/fields:/app/api/fields
+      - ../api/tasks:/app/api/tasks
+      - ../api/configs:/app/api/configs
+      - ../api/constants:/app/api/constants
+      - ../api/contexts:/app/api/contexts
+      - ../api/factories:/app/api/factories
+      - ../api/migrations:/app/api/migrations
+      - ../api/schedule:/app/api/schedule
+      - ../api/templates:/app/api/templates
+      - ../api/app.py:/app/api/app.py
+      - ../api/app_factory.py:/app/api/app_factory.py
+      - ../api/commands.py:/app/api/commands.py
+      - ../api/pyproject.toml:/app/api/pyproject.toml
+      - ../api/poetry.lock:/app/api/poetry.lock
     networks:
       - ssrf_proxy_network
       - default
@@ -432,6 +453,27 @@ services:
     volumes:
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
+      - ../api/controllers:/app/api/controllers
+      - ../api/models:/app/api/models
+      - ../api/services:/app/api/services
+      - ../api/libs:/app/api/libs
+      - ../api/core:/app/api/core
+      - ../api/events:/app/api/events
+      - ../api/extensions:/app/api/extensions
+      - ../api/fields:/app/api/fields
+      - ../api/tasks:/app/api/tasks
+      - ../api/configs:/app/api/configs
+      - ../api/constants:/app/api/constants
+      - ../api/contexts:/app/api/contexts
+      - ../api/factories:/app/api/factories
+      - ../api/migrations:/app/api/migrations
+      - ../api/schedule:/app/api/schedule
+      - ../api/templates:/app/api/templates
+      - ../api/app.py:/app/api/app.py
+      - ../api/app_factory.py:/app/api/app_factory.py
+      - ../api/commands.py:/app/api/commands.py
+      - ../api/pyproject.toml:/app/api/pyproject.toml
+      - ../api/poetry.lock:/app/api/poetry.lock
     networks:
       - ssrf_proxy_network
       - default

@@ -104,7 +104,7 @@ class GetProcessRuleApi(Resource):
         req_data = request.args
 
         document_id = req_data.get("document_id")
-
+        logging.info(f"Processing document with id: {document_id}")
         # get default rules
         mode = DocumentService.DEFAULT_RULES["mode"]
         rules = DocumentService.DEFAULT_RULES["rules"]

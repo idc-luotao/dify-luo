@@ -48,6 +48,7 @@ class IndexingRunner:
 
     def run(self, dataset_documents: list[DatasetDocument]):
         """Run the indexing process."""
+        logging.info(f"start run indexing process....")
         for dataset_document in dataset_documents:
             try:
                 # get dataset
@@ -66,9 +67,10 @@ class IndexingRunner:
                     raise ValueError("no process rule found")
                 index_type = dataset_document.doc_form
                 index_processor = IndexProcessorFactory(index_type).init_index_processor()
+                logging.info("start _extract ")
                 # extract
                 text_docs = self._extract(index_processor, dataset_document, processing_rule.to_dict())
-
+                logging.info("start _transform ")
                 # transform
                 documents = self._transform(
                     index_processor, dataset, text_docs, dataset_document.doc_language, processing_rule.to_dict()

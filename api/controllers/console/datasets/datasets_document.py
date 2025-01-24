@@ -1,4 +1,5 @@
 import logging
+import click
 from argparse import ArgumentTypeError
 from datetime import datetime, timezone
 
@@ -97,12 +98,13 @@ class GetProcessRuleApi(Resource):
     @account_initialization_required
     def get(self):
         req_data = request.args
-
         document_id = req_data.get("document_id")
-
         # get default rules
         mode = DocumentService.DEFAULT_RULES["mode"]
         rules = DocumentService.DEFAULT_RULES["rules"]
+
+        logging.info(f"Processing document with id: {document_id}")
+
         if document_id:
             # get the latest process rule
             document = Document.query.get_or_404(document_id)
@@ -129,7 +131,7 @@ class GetProcessRuleApi(Resource):
                 mode = dataset_process_rule.mode
                 rules = dataset_process_rule.rules_dict
 
-        return {"mode": mode, "rules": rules}
+        return {"mode": mode, "rules": rules,"test9": True}
 
 
 class DatasetDocumentListApi(Resource):
@@ -198,7 +200,7 @@ class DatasetDocumentListApi(Resource):
                     DocumentSegment.completed_at.isnot(None),
                     DocumentSegment.document_id == str(document.id),
                     DocumentSegment.status != "re_segment",
-                ).count()
+                    ).count()
                 total_segments = DocumentSegment.query.filter(
                     DocumentSegment.document_id == str(document.id), DocumentSegment.status != "re_segment"
                 ).count()
@@ -285,6 +287,7 @@ class DatasetInitApi(Resource):
         if not current_user.is_editor:
             raise Forbidden()
 
+        logging.info(f"Processing DatasetInitApi")
         parser = reqparse.RequestParser()
         parser.add_argument(
             "indexing_technique",
@@ -429,7 +432,7 @@ class DocumentBatchIndexingEstimateApi(DocumentResource):
                 info_list.append(file_id)
             # format document notion info
             elif (
-                data_source_info and "notion_workspace_id" in data_source_info and "notion_page_id" in data_source_info
+                    data_source_info and "notion_workspace_id" in data_source_info and "notion_page_id" in data_source_info
             ):
                 pages = []
                 page = {"page_id": data_source_info["notion_page_id"], "type": data_source_info["type"]}
@@ -518,7 +521,7 @@ class DocumentBatchIndexingStatusApi(DocumentResource):
                 DocumentSegment.completed_at.isnot(None),
                 DocumentSegment.document_id == str(document.id),
                 DocumentSegment.status != "re_segment",
-            ).count()
+                ).count()
             total_segments = DocumentSegment.query.filter(
                 DocumentSegment.document_id == str(document.id), DocumentSegment.status != "re_segment"
             ).count()
@@ -544,7 +547,7 @@ class DocumentIndexingStatusApi(DocumentResource):
             DocumentSegment.completed_at.isnot(None),
             DocumentSegment.document_id == str(document_id),
             DocumentSegment.status != "re_segment",
-        ).count()
+            ).count()
         total_segments = DocumentSegment.query.filter(
             DocumentSegment.document_id == str(document_id), DocumentSegment.status != "re_segment"
         ).count()

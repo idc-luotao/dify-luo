@@ -241,7 +241,10 @@ x-shared-env: &shared-api-worker-env
 services:
   # API service
   api:
-    image: langgenius/dify-api:0.10.1
+    # image: langgenius/dify-api-local:0.10.1
+    build: # 指定构建镜像的路径
+      context: ..
+      dockerfile: api/Dockerfile
     restart: always
     environment:
       # Use the shared environment variables.
@@ -254,6 +257,34 @@ services:
     volumes:
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
+      # Mount the local source code directories
+      - ../api/controllers:/app/api/controllers
+      - ../api/models:/app/api/models
+      - ../api/services:/app/api/services
+      - ../api/libs:/app/api/libs
+      - ../api/core:/app/api/core
+      - ../api/events:/app/api/events
+      - ../api/extensions:/app/api/extensions
+      - ../api/fields:/app/api/fields
+      - ../api/tasks:/app/api/tasks
+      - ../api/configs:/app/api/configs
+      - ../api/constants:/app/api/constants
+      - ../api/contexts:/app/api/contexts
+      - ../api/factories:/app/api/factories
+      - ../api/migrations:/app/api/migrations
+      - ../api/schedule:/app/api/schedule
+      - ../api/templates:/app/api/templates
+      - ../api/app.py:/app/api/app.py
+      - ../api/app_factory.py:/app/api/app_factory.py
+      - ../api/commands.py:/app/api/commands.py
+      - ../api/pyproject.toml:/app/api/pyproject.toml
+      - ../api/poetry.lock:/app/api/poetry.lock
+    command: >
+      python -m debugpy --listen 0.0.0.0:5678 --wait-for-client
+      -m gunicorn 'app:create_app()' --workers=1 --threads=4 --worker-class=gthread -b 0.0.0.0:5001
+    ports:
+      - "5001:5001"
+      - "5678:5678"  # Debug port
     networks:
       - ssrf_proxy_network
       - default
@@ -261,7 +292,10 @@ services:
   # worker service
   # The Celery worker for processing the queue.
   worker:
-    image: langgenius/dify-api:0.10.1
+    image: langgenius/dify-api-local:0.10.1
+    # build: # 指定构建镜像的路径
+    #   context: ..
+    #   dockerfile: api/Dockerfile
     restart: always
     environment:
       # Use the shared environment variables.
@@ -274,6 +308,28 @@ services:
     volumes:
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
+      # Mount the local source code directories
+      - ../api/controllers:/app/api/controllers
+      - ../api/models:/app/api/models
+      - ../api/services:/app/api/services
+      - ../api/libs:/app/api/libs
+      - ../api/core:/app/api/core
+      - ../api/events:/app/api/events
+      - ../api/extensions:/app/api/extensions
+      - ../api/fields:/app/api/fields
+      - ../api/tasks:/app/api/tasks
+      - ../api/configs:/app/api/configs
+      - ../api/constants:/app/api/constants
+      - ../api/contexts:/app/api/contexts
+      - ../api/factories:/app/api/factories
+      - ../api/migrations:/app/api/migrations
+      - ../api/schedule:/app/api/schedule
+      - ../api/templates:/app/api/templates
+      - ../api/app.py:/app/api/app.py
+      - ../api/app_factory.py:/app/api/app_factory.py
+      - ../api/commands.py:/app/api/commands.py
+      - ../api/pyproject.toml:/app/api/pyproject.toml
+      - ../api/poetry.lock:/app/api/poetry.lock
     networks:
       - ssrf_proxy_network
       - default

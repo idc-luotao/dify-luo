@@ -55,12 +55,11 @@ class FileService:
         # generate file key
         file_uuid = str(uuid.uuid4())
 
-        # if isinstance(user, Account):
-        #     current_tenant_id = user.current_tenant_id
-        # else:
-        #     # end_user
-        #     current_tenant_id = user.tenant_id
-        current_tenant_id = "33ce29f0-6f5d-4da0-b9c3-78dc42d9207c"
+        if isinstance(user, Account):
+            current_tenant_id = user.current_tenant_id
+        else:
+            # end_user
+            current_tenant_id = user.tenant_id
 
         file_key = "upload_files/" + (current_tenant_id or "") + "/" + file_uuid + "." + extension
 

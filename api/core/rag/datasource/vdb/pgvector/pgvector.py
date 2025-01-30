@@ -2,7 +2,7 @@ import json
 import uuid
 from contextlib import contextmanager
 from typing import Any
-
+import logging
 import psycopg2.extras  # type: ignore
 import psycopg2.pool  # type: ignore
 from pydantic import BaseModel, model_validator
@@ -95,6 +95,7 @@ class PGVector(BaseVector):
             self.pool.putconn(conn)
 
     def create(self, texts: list[Document], embeddings: list[list[float]], **kwargs):
+        logging.info("create collection and add texts, collection_name: " + self.table_name)
         dimension = len(embeddings[0])
         self._create_collection(dimension)
         return self.add_texts(texts, embeddings)
@@ -102,6 +103,7 @@ class PGVector(BaseVector):
     def add_texts(self, documents: list[Document], embeddings: list[list[float]], **kwargs):
         values = []
         pks = []
+        logging.info("add texts, collection_name: " + self.table_name)
         for i, doc in enumerate(documents):
             if doc.metadata is not None:
                 doc_id = doc.metadata.get("doc_id", str(uuid.uuid4()))

@@ -44,7 +44,7 @@ class FileApi(Resource):
         }, 200
 
     @setup_required
-    @login_required
+    # @login_required
     @account_initialization_required
     @marshal_with(file_fields)
     @cloud_edition_billing_resource_check("documents")
@@ -62,8 +62,8 @@ class FileApi(Resource):
         if not file.filename:
             raise FilenameNotExistsError
 
-        if source == "datasets" and not current_user.is_dataset_editor:
-            raise Forbidden()
+        # if source == "datasets" and not current_user.is_dataset_editor:
+        #     raise Forbidden()
 
         if source not in ("datasets", None):
             source = None

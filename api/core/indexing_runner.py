@@ -2,6 +2,7 @@ import concurrent.futures
 import datetime
 import json
 import logging
+from datetime import datetime
 import re
 import threading
 import time
@@ -48,7 +49,8 @@ class IndexingRunner:
 
     def run(self, dataset_documents: list[DatasetDocument]):
         """Run the indexing process."""
-        logging.info(f"start run indexing process....")
+        
+        logging.info(f"start run indexing process123....")
         for dataset_document in dataset_documents:
             try:
                 # get dataset

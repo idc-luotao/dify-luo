@@ -109,8 +109,10 @@ class AccountService:
 
         current_tenant = TenantAccountJoin.query.filter_by(account_id=account.id, current=True).first()
         if current_tenant:
+            logging.info("current_tenant exists")
             account.current_tenant_id = current_tenant.tenant_id
         else:
+            logging.info("current_tenant not exists")
             available_ta = (
                 TenantAccountJoin.query.filter_by(account_id=account.id).order_by(TenantAccountJoin.id.asc()).first()
             )

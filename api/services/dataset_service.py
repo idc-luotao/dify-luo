@@ -1191,9 +1191,11 @@ class DocumentService:
 
     @staticmethod
     def save_document_without_dataset_id(tenant_id: str, knowledge_config: KnowledgeConfig, account: Account):
+        logging.info("save_document_without_dataset_id:01")
         features = FeatureService.get_features(current_user.current_tenant_id)
-
+        logging.info("save_document_without_dataset_id:02")
         if features.billing.enabled:
+            logging.info("save_document_without_dataset_id:021")
             count = 0
             if knowledge_config.data_source.info_list.data_source_type == "upload_file":  # type: ignore
                 upload_file_list = (
@@ -1217,6 +1219,7 @@ class DocumentService:
 
             DocumentService.check_documents_upload_quota(count, features)
 
+        logging.info("save_document_without_dataset_id:03")
         dataset_collection_binding_id = None
         retrieval_model = None
         if knowledge_config.indexing_technique == "high_quality":
@@ -1236,6 +1239,7 @@ class DocumentService:
                     score_threshold_enabled=False,
                 )
         # save dataset
+        logging.info("save_document_without_dataset_id:04")
         dataset = Dataset(
             tenant_id=tenant_id,
             name="",
@@ -1247,18 +1251,25 @@ class DocumentService:
             collection_binding_id=dataset_collection_binding_id,
             retrieval_model=retrieval_model.model_dump() if retrieval_model else None,
         )
-
+        logging.info("save_document_without_dataset_id:041")
         db.session.add(dataset)  # type: ignore
         db.session.flush()
+        logging.info("save_document_without_dataset_id:042")
+        try:
+            documents, batch = DocumentService.save_document_with_dataset_id(dataset, knowledge_config, account)
+        except Exception as e:
+            logging.error("捕获到异常：", exc_info=True)
+            raise e
 
-        documents, batch = DocumentService.save_document_with_dataset_id(dataset, knowledge_config, account)
+        logging.info("save_document_without_dataset_id:043")
 
         cut_length = 18
         cut_name = documents[0].name[:cut_length]
         dataset.name = cut_name + "..."
         dataset.description = "useful for when you want to answer queries about the " + documents[0].name
+        logging.info("save_document_without_dataset_id:044")
         db.session.commit()
-
+        logging.info("save_document_without_dataset_id:05")
         return dataset, documents, batch
 
     @classmethod

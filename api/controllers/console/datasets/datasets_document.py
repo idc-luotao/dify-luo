@@ -102,9 +102,12 @@ class GetProcessRuleApi(Resource):
     @account_initialization_required
     def get(self):
         req_data = request.args
+        current_time = datetime.now()  # 获取当前时间
+        logging.info(f"start time: {current_time}")
 
         document_id = req_data.get("document_id")
-        logging.info(f"Processing document with id: {document_id}")
+      
+        logging.info(f"Processing document with456 id: {document_id}")
         # get default rules
         mode = DocumentService.DEFAULT_RULES["mode"]
         rules = DocumentService.DEFAULT_RULES["rules"]
@@ -304,16 +307,18 @@ class DatasetDocumentListApi(Resource):
 
 class DatasetInitApi(Resource):
     @setup_required
-    @login_required
+    # @login_required
     @account_initialization_required
     @marshal_with(dataset_and_document_fields)
     @cloud_edition_billing_resource_check("vector_space")
     def post(self):
+        logging.info("DatasetInitApi01")
         # The role of the current user in the ta table must be admin, owner, or editor
         if not current_user.is_editor:
             raise Forbidden()
-
+        logging.info("DatasetInitApi02")
         parser = reqparse.RequestParser()
+        logging.info("DatasetInitApi03")
         parser.add_argument(
             "indexing_technique",
             type=str,
@@ -332,7 +337,7 @@ class DatasetInitApi(Resource):
         parser.add_argument("embedding_model", type=str, required=False, nullable=True, location="json")
         parser.add_argument("embedding_model_provider", type=str, required=False, nullable=True, location="json")
         args = parser.parse_args()
-
+        logging.info("DatasetInitApi04")
         # The role of the current user in the ta table must be admin, owner, or editor, or dataset_operator
         if not current_user.is_dataset_editor:
             raise Forbidden()
@@ -354,21 +359,28 @@ class DatasetInitApi(Resource):
                 )
             except ProviderTokenNotInitError as ex:
                 raise ProviderNotInitializeError(ex.description)
-
+        logging.info("DatasetInitApi05")
         # validate args
         DocumentService.document_create_args_validate(knowledge_config)
-
+        logging.info("DatasetInitApi06")
         try:
             dataset, documents, batch = DocumentService.save_document_without_dataset_id(
                 tenant_id=current_user.current_tenant_id, knowledge_config=knowledge_config, account=current_user
             )
         except ProviderTokenNotInitError as ex:
+            logging.info(f"DatasetInitApi06 e1 {ex.description}")
             raise ProviderNotInitializeError(ex.description)
-        except QuotaExceededError:
+        except QuotaExceededError as ex2:
+            logging.info(f"DatasetInitApi06 e2 {ex2.description}")
             raise ProviderQuotaExceededError()
-        except ModelCurrentlyNotSupportError:
+        except ModelCurrentlyNotSupportError as ex3:
+            logging.info(f"DatasetInitApi06 e3 {ex3.description}")
             raise ProviderModelCurrentlyNotSupportError()
-
+        except Exception as e:
+            print(f"捕获到异常：{e}")
+            raise e
+        
+        logging.info("DatasetInitApi07")
         response = {"dataset": dataset, "documents": documents, "batch": batch}
 
         return response

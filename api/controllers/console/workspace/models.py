@@ -97,6 +97,7 @@ class ModelProviderModelApi(Resource):
     @login_required
     @account_initialization_required
     def post(self, provider: str):
+        logging.info("ModelProviderModelApi in post")
         if not current_user.is_admin_or_owner:
             raise Forbidden()
 
@@ -125,6 +126,7 @@ class ModelProviderModelApi(Resource):
             and "enabled" in args["load_balancing"]
             and args["load_balancing"]["enabled"]
         ):
+            logging.info("in load balancing")
             if "configs" not in args["load_balancing"]:
                 raise ValueError("invalid load balancing configs")
 
@@ -142,6 +144,7 @@ class ModelProviderModelApi(Resource):
                 tenant_id=tenant_id, provider=provider, model=args["model"], model_type=args["model_type"]
             )
         else:
+            logging.info("not in load balancing")
             # disable load balancing
             model_load_balancing_service.disable_model_load_balancing(
                 tenant_id=tenant_id, provider=provider, model=args["model"], model_type=args["model_type"]

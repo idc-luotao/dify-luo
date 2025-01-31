@@ -1,3 +1,4 @@
+import logging
 import base64
 import time
 from typing import Optional, Union
@@ -143,8 +144,9 @@ class OpenAITextEmbeddingModel(_CommonOpenAI, TextEmbeddingModel):
         try:
             # transform credentials to kwargs for model instance
             credentials_kwargs = self._to_credential_kwargs(credentials)
+            logging.info("Validate credentials1 %s %s", model, credentials_kwargs)
             client = OpenAI(**credentials_kwargs)
-
+            logging.info("Validate credentials2 %s %s", model, credentials_kwargs)
             # call embedding model
             self._embedding_invoke(model=model, client=client, texts=["ping"], extra_model_kwargs={})
         except Exception as ex:
@@ -162,13 +164,15 @@ class OpenAITextEmbeddingModel(_CommonOpenAI, TextEmbeddingModel):
         :param extra_model_kwargs: extra model kwargs
         :return: embeddings and used tokens
         """
+
+        logging.info("_embedding_invoke request: [%s],[%s]", texts, model)
         # call embedding model
         response = client.embeddings.create(
             input=texts,
             model=model,
             **extra_model_kwargs,
         )
-
+        logging.info("_embedding_invoke response: [%s]", response)
         if "encoding_format" in extra_model_kwargs and extra_model_kwargs["encoding_format"] == "base64":
             # decode base64 embedding
             return (

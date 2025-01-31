@@ -2,7 +2,6 @@ import concurrent.futures
 import datetime
 import json
 import logging
-from datetime import datetime
 import re
 import threading
 import time

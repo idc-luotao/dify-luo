@@ -28,6 +28,7 @@ class DefaultModelApi(Resource):
             choices=[mt.value for mt in ModelType],
             location="args",
         )
+        logging.info("DefaultModelApi in get")
         args = parser.parse_args()
 
         tenant_id = current_user.current_tenant_id
@@ -43,6 +44,7 @@ class DefaultModelApi(Resource):
     @login_required
     @account_initialization_required
     def post(self):
+        logging.info("DefaultModelApi in post")
         if not current_user.is_admin_or_owner:
             raise Forbidden()
 
@@ -87,7 +89,7 @@ class ModelProviderModelApi(Resource):
     @account_initialization_required
     def get(self, provider):
         tenant_id = current_user.current_tenant_id
-
+        logging.info(f"`tenant_id:{tenant_id}`")
         model_provider_service = ModelProviderService()
         models = model_provider_service.get_models_by_provider(tenant_id=tenant_id, provider=provider)
 

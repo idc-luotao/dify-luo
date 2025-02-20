@@ -365,7 +365,7 @@ const translation = {
       howToEarn: '如何获取',
     },
     addMoreModelProvider: '添加更多模型提供商',
-    addModel: '添加模型',
+    addModel: '添加模型1',
     modelsNum: '{{num}} 个模型',
     showModels: '显示模型',
     showModelsNum: '显示 {{num}} 个模型',

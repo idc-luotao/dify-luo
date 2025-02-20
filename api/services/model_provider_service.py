@@ -272,6 +272,8 @@ class ModelProviderService:
         :param model_type: model type
         :return:
         """
+
+        logging.info(f"Get models by model type {model_type} for tenant {tenant_id}.")
         # Get all provider configurations of the current workspace
         provider_configurations = self.provider_manager.get_configurations(tenant_id)
 

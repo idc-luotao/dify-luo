@@ -89,7 +89,7 @@ const ProviderCard: FC<ProviderCardProps> = ({
                   disabled={!isCurrentWorkspaceManager}
                 >
                   <RiAddLine className='mr-[5px] w-3.5 h-3.5' />
-                  {t('common.modelProvider.addModel')}
+                  {t('common.modelProvider.addModel')}X456
                 </Button>
               )
             })

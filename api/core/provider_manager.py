@@ -1,3 +1,5 @@
+import logging
+
 import json
 from collections import defaultdict
 from json import JSONDecodeError
@@ -227,6 +229,7 @@ class ProviderManager:
         :param model_type: model type
         :return:
         """
+        logging.info(f"Get default model, tenant_id: {tenant_id}, model_type: {model_type}")
         # Get the corresponding TenantDefaultModel record
         default_model = (
             db.session.query(TenantDefaultModel)
@@ -240,6 +243,8 @@ class ProviderManager:
         # If it does not exist, get the first available provider model from get_configurations
         # and update the TenantDefaultModel record
         if not default_model:
+
+            logging.info("default_model test!!!!!!!!!!!!!!!!!!!!!!")
             # Get provider configurations
             provider_configurations = self.get_configurations(tenant_id)
 
@@ -263,6 +268,7 @@ class ProviderManager:
         if not default_model:
             return None
 
+        logging.info("not default_model passed")
         provider_instance = model_provider_factory.get_provider_instance(default_model.provider_name)
         provider_schema = provider_instance.get_provider_schema()
 

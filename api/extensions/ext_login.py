@@ -1,7 +1,7 @@
 import json
 import logging
 import flask_login  # type: ignore
-from flask import Response, request
+from flask import Response
 from flask_login import user_loaded_from_request, user_logged_in
 from werkzeug.exceptions import Unauthorized
 
@@ -26,10 +26,10 @@ def load_user_from_request(request_from_flask_login):
 
     current_path = request_from_flask_login.path
     logging.info(f"check token for url, current_path: {current_path}")
-    if current_path in WHITELIST_URLS:
-        logging.info(f"URL {current_path} is in whitelist, skip authentication")
-        logged_in_account = AccountService.load_logged_in_account(account_id="60e1d36a-e296-49dd-b076-85873fb56849")
-        return logged_in_account
+    # if current_path in WHITELIST_URLS:
+    #     logging.info(f"URL {current_path} is in whitelist, skip authentication")
+    #     logged_in_account = AccountService.load_logged_in_account(account_id="d078a59e-92c1-4a7c-af30-b81887cfed36")
+    #     return logged_in_account
 
     if request_from_flask_login.blueprint not in {"console", "inner_api"}:
         return None

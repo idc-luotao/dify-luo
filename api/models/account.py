@@ -265,3 +265,21 @@ class InvitationCode(db.Model):  # type: ignore[name-defined]
     used_by_account_id = db.Column(StringUUID)
     deprecated_at = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
+
+
+class ChatUser(db.Model):
+    """Chat User Model"""
+    __tablename__ = 'chat_users'
+    
+    id = db.Column(StringUUID, primary_key=True, server_default=db.text('uuid_generate_v4()'))
+    username = db.Column(db.String(255), nullable=False, unique=True)
+    email = db.Column(db.String(255), nullable=True)
+    password = db.Column(db.String(255), nullable=True)
+    
+    avatar_url = db.Column(db.String(255), nullable=True)
+   
+    created_at = db.Column(db.DateTime, server_default=db.text('CURRENT_TIMESTAMP(0)'), nullable=False)
+    updated_at = db.Column(db.DateTime, server_default=db.text('CURRENT_TIMESTAMP(0)'), nullable=False, onupdate=db.text('CURRENT_TIMESTAMP(0)'))
+
+    def __repr__(self):
+        return f"<ChatUser {self.username}>"

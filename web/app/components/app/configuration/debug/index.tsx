@@ -404,7 +404,7 @@ const Debug: FC<IDebug> = ({
                       disabled={multipleModelConfigs.length >= 4}
                     >
                       <RiAddLine className='mr-1 w-3.5 h-3.5' />
-                      {t('common.modelProvider.addModel')}({multipleModelConfigs.length}/4)
+                      {t('common.modelProvider.addModel')}({multipleModelConfigs.length}/4)X789
                     </Button>
                     <div className='mx-2 w-[1px] h-[14px] bg-divider-regular' />
                   </>

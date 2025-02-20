@@ -1,3 +1,10 @@
+# import debugpy
+
+# debugpy.listen(("0.0.0.0", 5678))  # 监听远程调试端口
+# print("Waiting for debugger to attach...")  # 提示 PyCharm 连接
+# debugpy.wait_for_client()  # 等待 PyCharm 连接
+# debugpy.breakpoint()  # 这里可以设置一个初始断点
+
 import os
 import sys
 

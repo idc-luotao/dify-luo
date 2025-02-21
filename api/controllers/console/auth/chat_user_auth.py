@@ -4,27 +4,26 @@ from werkzeug.exceptions import Unauthorized
 
 from controllers.console import api
 from controllers.console.wraps import setup_required
-from libs.helper import extract_remote_ip
 from services.chat_user_service import ChatUserService
 from services.errors.account import AccountLoginError, AccountNotFoundError, AccountPasswordError
 
 class ChatUserLoginApi(Resource):
     @setup_required
     def post(self):
-        """Authenticate chat user and login."""
+        """Chat user login with email and password."""
         parser = reqparse.RequestParser()
-        parser.add_argument('username', type=str, required=True, location='json')
+        parser.add_argument('email', type=str, required=True, location='json')
         parser.add_argument('password', type=str, required=True, location='json')
         args = parser.parse_args()
 
         try:
-            user = ChatUserService.authenticate(args['username'], args['password'])
-            token_pair = ChatUserService.login(user, extract_remote_ip(request))
+            chat_user = ChatUserService.authenticate(args['email'], args['password'])
+            token_pair = ChatUserService.login(chat_user)
             return {'result': 'success', 'data': token_pair}
         except AccountNotFoundError:
-            raise Unauthorized('Invalid username or password')
+            raise Unauthorized('Invalid email or password')
         except AccountPasswordError:
-            raise Unauthorized('Invalid username or password')
+            raise Unauthorized('Invalid email or password')
         except AccountLoginError as e:
             raise Unauthorized(str(e))
 

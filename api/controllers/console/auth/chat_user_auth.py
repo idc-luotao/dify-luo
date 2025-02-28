@@ -3,12 +3,12 @@ from flask_restful import Resource, reqparse
 from werkzeug.exceptions import Unauthorized
 
 from controllers.console import api
-from controllers.console.wraps import setup_required
+
 from services.chat_user_service import ChatUserService
 from services.errors.account import AccountLoginError, AccountNotFoundError, AccountPasswordError
 
 class ChatUserLoginApi(Resource):
-    @setup_required
+
     def post(self):
         """Chat user login with email and password."""
         parser = reqparse.RequestParser()
@@ -19,16 +19,15 @@ class ChatUserLoginApi(Resource):
         try:
             chat_user = ChatUserService.authenticate(args['email'], args['password'])
             token_pair = ChatUserService.login(chat_user)
-            return {'result': 'success', 'data': token_pair}
+            return {'result': 'success', 'data': token_pair.model_dump(),'username':chat_user.email}
         except AccountNotFoundError:
-            raise Unauthorized('Invalid email or password')
+            return {'result': 'fail'}
         except AccountPasswordError:
-            raise Unauthorized('Invalid email or password')
+            return {'result': 'fail'}
         except AccountLoginError as e:
             raise Unauthorized(str(e))
 
 class ChatUserRefreshTokenApi(Resource):
-    @setup_required
     def post(self):
         """Refresh access token."""
         parser = reqparse.RequestParser()

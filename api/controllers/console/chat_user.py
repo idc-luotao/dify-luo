@@ -1,6 +1,6 @@
 from flask import request
 from flask_restful import Resource, reqparse
-from models.account import ChatUser, db
+from models.account import ChatUser, db,Account
 from werkzeug.exceptions import NotFound, Conflict
 from controllers.console import api
 from controllers.console.wraps import (

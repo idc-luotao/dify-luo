@@ -289,6 +289,18 @@ class AppRunner:
             PublishFrom.APPLICATION_MANAGER,
         )
 
+    def _reGen(self, invoke_result):
+        checkText = ''
+        type1 = ''
+        type2 = ''
+        for result in invoke_result:
+            checkText += result.delta.message.content
+            type1 = result.delta.finish_reason
+            if type1 is not None and type1 != "null":
+                type2='has over'
+
+            yield result
+
     def _handle_invoke_result_stream(
         self, invoke_result: Generator, queue_manager: AppQueueManager, agent: bool
     ) -> None:
@@ -303,6 +315,10 @@ class AppRunner:
         prompt_messages: list[PromptMessage] = []
         text = ""
         usage = None
+        
+        
+        # newresult = self._reGen(invoke_result)
+
         for result in invoke_result:
             if not agent:
                 queue_manager.publish(QueueLLMChunkEvent(chunk=result), PublishFrom.APPLICATION_MANAGER)

@@ -19,7 +19,11 @@ class ChatUserLoginApi(Resource):
         try:
             chat_user = ChatUserService.authenticate(args['email'], args['password'])
             token_pair = ChatUserService.login(chat_user)
-            return {'result': 'success', 'data': token_pair.model_dump(),'username':chat_user.email}
+            return {'result': 'success'
+                    , 'data': token_pair.model_dump()
+                    ,'username':chat_user.email
+                    ,'app_token':"app-7jQszHrothEW6YTl2kq33Cr2"
+                    }
         except AccountNotFoundError:
             return {'result': 'fail'}
         except AccountPasswordError:

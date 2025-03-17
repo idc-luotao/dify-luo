@@ -160,6 +160,11 @@ class EndpointConfig(BaseSettings):
         default="",
     )
 
+    PROMPT_API_URL: str = Field(
+        description="Base URL for the prompt API, used for remote prompt fetching",
+        default="",
+    )
+
 
 class FileAccessConfig(BaseSettings):
     """

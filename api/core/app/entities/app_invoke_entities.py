@@ -86,6 +86,8 @@ class AppGenerateEntity(BaseModel):
     files: Sequence[File]
     user_id: str
 
+    question_type: str
+    dynamic_prompt: str
     # extras
     stream: bool
     invoke_from: InvokeFrom

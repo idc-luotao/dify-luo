@@ -272,6 +272,7 @@ class ChatUser(db.Model):
     __tablename__ = 'chat_users'
     
     id = db.Column(StringUUID, primary_key=True, server_default=db.text('uuid_generate_v4()'))
+    tenant_id = db.Column(StringUUID, nullable=True)
     username = db.Column(db.String(255), nullable=False, unique=True)
     email = db.Column(db.String(255), nullable=True)
     password = db.Column(db.String(255), nullable=True)

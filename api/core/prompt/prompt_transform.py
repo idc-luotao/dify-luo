@@ -15,6 +15,7 @@ class PromptTransform:
         memory_config: MemoryConfig,
         prompt_messages: list[PromptMessage],
         model_config: ModelConfigWithCredentialsEntity,
+        question_type:Optional[str] = None,
     ) -> list[PromptMessage]:
         rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
         histories = self._get_history_messages_list_from_memory(memory, memory_config, rest_tokens)

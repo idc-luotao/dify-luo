@@ -60,6 +60,8 @@ class SimplePromptTransform(PromptTransform):
         context: Optional[str],
         memory: Optional[TokenBufferMemory],
         model_config: ModelConfigWithCredentialsEntity,
+        question_type:Optional[str] = None,
+        dynamic_prompt:Optional[str] = None,
     ) -> tuple[list[PromptMessage], Optional[list[str]]]:
         inputs = {key: str(value) for key, value in inputs.items()}
 
@@ -74,6 +76,8 @@ class SimplePromptTransform(PromptTransform):
                 context=context,
                 memory=memory,
                 model_config=model_config,
+                question_type=question_type,
+                dynamic_prompt=dynamic_prompt,
             )
         else:
             prompt_messages, stops = self._get_completion_model_prompt_messages(
@@ -175,6 +179,8 @@ class SimplePromptTransform(PromptTransform):
         files: Sequence["File"],
         memory: Optional[TokenBufferMemory],
         model_config: ModelConfigWithCredentialsEntity,
+        question_type:Optional[str] = None,
+        dynamic_prompt:Optional[str] = None,
     ) -> tuple[list[PromptMessage], Optional[list[str]]]:
         prompt_messages: list[PromptMessage] = []
 
@@ -188,10 +194,16 @@ class SimplePromptTransform(PromptTransform):
             context=context,
         )
 
-        if prompt and query:
-            prompt_messages.append(SystemPromptMessage(content=prompt))
+        if dynamic_prompt:
+            print(f"dynamic_prompt:{dynamic_prompt}")
 
-        if memory:
+        if prompt and query:
+            if dynamic_prompt and question_type=='2':
+                prompt_messages.append(SystemPromptMessage(content=dynamic_prompt))
+            else:
+                prompt_messages.append(SystemPromptMessage(content=prompt))
+
+        if memory: 
             prompt_messages = self._append_chat_histories(
                 memory=memory,
                 memory_config=MemoryConfig(
@@ -201,6 +213,7 @@ class SimplePromptTransform(PromptTransform):
                 ),
                 prompt_messages=prompt_messages,
                 model_config=model_config,
+                question_type=question_type,
             )
 
         if query:

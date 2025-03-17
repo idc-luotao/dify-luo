@@ -106,6 +106,9 @@ class ChatApi(Resource):
         parser.add_argument("conversation_id", type=uuid_value, location="json")
         parser.add_argument("retriever_from", type=str, required=False, default="dev", location="json")
         parser.add_argument("auto_generate_name", type=bool, required=False, default=True, location="json")
+        parser.add_argument("question_type", type=str, required=False, default='1', location="json")
+        parser.add_argument("dynamic_prompt", type=str, required=False, default='', location="json")
+
 
         args = parser.parse_args()
 

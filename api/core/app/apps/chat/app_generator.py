@@ -6,6 +6,7 @@ from typing import Any, Literal, Union, overload
 
 from flask import Flask, current_app
 from pydantic import ValidationError
+import urllib
 
 from configs import dify_config
 from constants import UUID_NIL
@@ -84,9 +85,17 @@ class ChatAppGenerator(MessageBasedAppGenerator):
         if not isinstance(query, str):
             raise ValueError("query must be a string")
 
+        question_type = ""
+        dynamic_prompt = ""
         query = query.replace("\x00", "")
         inputs = args["inputs"]
-
+        
+        if args.get("dynamic_prompt"):
+            question_type = args["question_type"]
+       
+        if args.get("dynamic_prompt"):
+            dynamic_prompt = urllib.parse.unquote(args["dynamic_prompt"])
+        
         extras = {"auto_generate_conversation_name": args.get("auto_generate_name", True)}
 
         # get conversation
@@ -154,6 +163,8 @@ class ChatAppGenerator(MessageBasedAppGenerator):
             extras=extras,
             trace_manager=trace_manager,
             stream=streaming,
+            question_type=question_type,
+            dynamic_prompt=dynamic_prompt,
         )
 
         # init generate records

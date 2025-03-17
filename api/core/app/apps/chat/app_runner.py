@@ -49,7 +49,8 @@ class ChatAppRunner(AppRunner):
         inputs = application_generate_entity.inputs
         query = application_generate_entity.query
         files = application_generate_entity.files
-
+        question_type = application_generate_entity.question_type
+        dynamic_prompt = application_generate_entity.dynamic_prompt
         # Pre-calculate the number of tokens of the prompt messages,
         # and return the rest number of tokens by model context token size limit and max token size limit.
         # If the rest number of tokens is not enough, raise exception.
@@ -85,6 +86,8 @@ class ChatAppRunner(AppRunner):
             files=files,
             query=query,
             memory=memory,
+            question_type=question_type,
+            dynamic_prompt=dynamic_prompt,
         )
 
         # moderation
@@ -182,7 +185,9 @@ class ChatAppRunner(AppRunner):
             query=query,
             context=context,
             memory=memory,
+            question_type=question_type,
         )
+        
 
         # check hosting moderation
         hosting_moderation_result = self.check_hosting_moderation(

@@ -141,6 +141,8 @@ class AppRunner:
         query: Optional[str] = None,
         context: Optional[str] = None,
         memory: Optional[TokenBufferMemory] = None,
+        question_type:Optional[str] = None,
+        dynamic_prompt:Optional[str] = None,
     ) -> tuple[list[PromptMessage], Optional[list[str]]]:
         """
         Organize prompt messages
@@ -167,6 +169,8 @@ class AppRunner:
                 context=context,
                 memory=memory,
                 model_config=model_config,
+                question_type=question_type,
+                dynamic_prompt=dynamic_prompt,
             )
         else:
             memory_config = MemoryConfig(window=MemoryConfig.WindowConfig(enabled=False))

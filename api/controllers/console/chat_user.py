@@ -17,7 +17,7 @@ class ChatUserListApi(Resource):
         """获取用户列表"""
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 10, type=int)
-        users = ChatUser.query.filter(ChatUser.admin_user_id == current_user.id).paginate(page=page, per_page=per_page)
+        users = ChatUser.query.filter(ChatUser.tenant_id == current_user.current_tenant_id).paginate(page=page, per_page=per_page)
         
         return {
             'data': [{

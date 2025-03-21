@@ -824,8 +824,6 @@ class RegisterService:
         """
         try:
 
-            existsAccount = Account.query.first()
-
             # Register
             account = AccountService.create_account(
                 email=email,
@@ -837,14 +835,7 @@ class RegisterService:
 
             account.last_login_ip = ip_address
             account.initialized_at = datetime.now(UTC).replace(tzinfo=None)
-            tenant_id = ""
-            if existsAccount:
-                tenant = TenantService.get_join_tenants(existsAccount)
-                tenant_id = tenant[0].id
-                TenantService.create_tenant_member(tenant[0],account)
-                account.current_tenant_id=tenant_id
-            else:
-                tenant_id = TenantService.create_owner_tenant_if_not_exist(account=account, is_setup=True)
+            tenant_id = TenantService.create_owner_tenant_if_not_exist(account=account, is_setup=True)
                 
 
             existsList = db.session.query(DifySetup).filter(DifySetup.version == dify_config.CURRENT_VERSION).first()
@@ -852,9 +843,8 @@ class RegisterService:
                 dify_setup = DifySetup(version=dify_config.CURRENT_VERSION)
                 db.session.add(dify_setup)
 
-
             app_service = AppService()
-            app_args = {"name":"test-work-pc-01","icon_type":"emoji","icon":"","icon_background":"#FFEAD5","mode":"chat","description":""}
+            app_args = {"name":tenant_id+"_chatbot","icon_type":"emoji","icon":"","icon_background":"#FFEAD5","mode":"chat","description":""}
             app = app_service.create_app(tenant_id, app_args, account)
 
             key = ApiToken.generate_api_key("app-", 24)

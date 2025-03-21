@@ -4,6 +4,7 @@ import flask_login  # type: ignore
 from flask import request
 from flask_restful import Resource, reqparse  # type: ignore
 
+from models.model import ApiToken, App
 import services
 from configs import dify_config
 from constants.languages import languages
@@ -94,7 +95,19 @@ class LoginApi(Resource):
 
         token_pair = AccountService.login(account=account, ip_address=extract_remote_ip(request))
         AccountService.reset_login_error_rate_limit(args["email"])
-        return {"result": "success", "data": token_pair.model_dump()}
+
+        app_token =""
+        app = App.query.filter(App.created_by==account.id).first()
+        if app:
+            app_token_rec = ApiToken.query.filter(ApiToken.app_id==app.id).first()
+            if app_token_rec:
+                app_token = app_token_rec.token
+
+        return {"result": "success"
+        , "data": token_pair.model_dump()
+        ,"app_token":app_token
+        ,"username":account.email
+        }
 
 
 class LogoutApi(Resource):

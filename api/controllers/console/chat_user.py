@@ -1,5 +1,6 @@
 from flask import request
 from flask_restful import Resource, reqparse
+from flask_login import current_user
 from models.account import ChatUser, db,Account
 from werkzeug.exceptions import NotFound, Conflict
 from controllers.console import api
@@ -16,7 +17,7 @@ class ChatUserListApi(Resource):
         """获取用户列表"""
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 10, type=int)
-        users = ChatUser.query.paginate(page=page, per_page=per_page)
+        users = ChatUser.query.filter(ChatUser.admin_user_id == current_user.id).paginate(page=page, per_page=per_page)
         
         return {
             'data': [{
@@ -57,7 +58,9 @@ class ChatUserListApi(Resource):
             username=args['username'],
             email=args['email'],
             password=hashed_password,
-            avatar_url=args['avatar_url']
+            avatar_url=args['avatar_url'],
+            tenant_id=current_user.current_tenant_id,  # 获取当前用户的tenant_id并指定给新的ChatUser
+            admin_user_id=current_user.id  # 设置创建者ID为当前管理员用户的ID
         )
         
         try:
@@ -69,6 +72,7 @@ class ChatUserListApi(Resource):
                     'username': user.username,
                     'email': user.email,
                     'avatar_url': user.avatar_url,
+                    'tenant_id': str(user.tenant_id) if user.tenant_id else None,
                     'created_at': user.created_at.isoformat(),
                     'updated_at': user.updated_at.isoformat()
                 }

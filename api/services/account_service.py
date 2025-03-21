@@ -31,7 +31,8 @@ from models.account import (
     TenantAccountRole,
     TenantStatus,
 )
-from models.model import DifySetup
+from models.model import ApiToken, DifySetup
+from services.app_service import AppService
 from services.billing_service import BillingService
 from services.errors.account import (
     AccountAlreadyInTenantError,
@@ -595,14 +596,15 @@ class TenantService:
         account.current_tenant = tenant
         db.session.commit()
         tenant_was_created.send(tenant)
+        return tenant.id
 
     @staticmethod
-    def create_tenant_member(tenant: Tenant, account: Account, role: str = "normal") -> TenantAccountJoin:
+    def create_tenant_member(tenant: Tenant, account: Account, role: str = "owner") -> TenantAccountJoin:
         """Create tenant member"""
-        if role == TenantAccountJoinRole.OWNER.value:
-            if TenantService.has_roles(tenant, [TenantAccountJoinRole.OWNER]):
-                logging.error(f"Tenant {tenant.id} has already an owner.")
-                raise Exception("Tenant already has an owner.")
+        # if role == TenantAccountJoinRole.OWNER.value:
+        #     if TenantService.has_roles(tenant, [TenantAccountJoinRole.OWNER]):
+        #         logging.error(f"Tenant {tenant.id} has already an owner.")
+        #         raise Exception("Tenant already has an owner.")
 
         ta = db.session.query(TenantAccountJoin).filter_by(tenant_id=tenant.id, account_id=account.id).first()
         if ta:
@@ -811,7 +813,7 @@ class RegisterService:
         return f"member_invite:token:{token}"
 
     @classmethod
-    def setup(cls, email: str, name: str, password: str, ip_address: str) -> None:
+    def setup(cls, email: str, name: str, password: str, ip_address: str) -> str:
         """
         Setup dify
 
@@ -821,6 +823,9 @@ class RegisterService:
         :param ip_address: ip address
         """
         try:
+
+            existsAccount = Account.query.first()
+
             # Register
             account = AccountService.create_account(
                 email=email,
@@ -832,12 +837,37 @@ class RegisterService:
 
             account.last_login_ip = ip_address
             account.initialized_at = datetime.now(UTC).replace(tzinfo=None)
+            tenant_id = ""
+            if existsAccount:
+                tenant = TenantService.get_join_tenants(existsAccount)
+                tenant_id = tenant[0].id
+                TenantService.create_tenant_member(tenant[0],account)
+                account.current_tenant_id=tenant_id
+            else:
+                tenant_id = TenantService.create_owner_tenant_if_not_exist(account=account, is_setup=True)
+                
 
-            TenantService.create_owner_tenant_if_not_exist(account=account, is_setup=True)
+            existsList = db.session.query(DifySetup).filter(DifySetup.version == dify_config.CURRENT_VERSION).first()
+            if not existsList:
+                dify_setup = DifySetup(version=dify_config.CURRENT_VERSION)
+                db.session.add(dify_setup)
 
-            dify_setup = DifySetup(version=dify_config.CURRENT_VERSION)
-            db.session.add(dify_setup)
+
+            app_service = AppService()
+            app_args = {"name":"test-work-pc-01","icon_type":"emoji","icon":"","icon_background":"#FFEAD5","mode":"chat","description":""}
+            app = app_service.create_app(tenant_id, app_args, account)
+
+            key = ApiToken.generate_api_key("app-", 24)
+            api_token = ApiToken()
+            api_token.app_id = app.id
+            api_token.tenant_id = tenant_id
+            api_token.token = key
+            api_token.type = "app"
+            db.session.add(api_token)
+       
+
             db.session.commit()
+            return app.id
         except Exception as e:
             db.session.query(DifySetup).delete()
             db.session.query(TenantAccountJoin).delete()

@@ -6,6 +6,7 @@ from libs.helper import StrLen, email, extract_remote_ip
 from libs.password import valid_password
 from models.model import DifySetup
 from services.account_service import RegisterService, TenantService
+from services.app_service import AppService
 
 from . import api
 from .error import AlreadySetupError, NotInitValidateError
@@ -25,16 +26,16 @@ class SetupApi(Resource):
     @only_edition_self_hosted
     def post(self):
         # is set up
-        if get_setup_status():
-            raise AlreadySetupError()
+        # if get_setup_status():
+        #     raise AlreadySetupError()
 
-        # is tenant created
-        tenant_count = TenantService.get_tenant_count()
-        if tenant_count > 0:
-            raise AlreadySetupError()
+        # # is tenant created
+        # tenant_count = TenantService.get_tenant_count()
+        # if tenant_count > 0:
+        #     raise AlreadySetupError()
 
-        if not get_init_validate_status():
-            raise NotInitValidateError()
+        # if not get_init_validate_status():
+        #     raise NotInitValidateError()
 
         parser = reqparse.RequestParser()
         parser.add_argument("email", type=email, required=True, location="json")
@@ -43,11 +44,13 @@ class SetupApi(Resource):
         args = parser.parse_args()
 
         # setup
-        RegisterService.setup(
+        app_id = RegisterService.setup(
             email=args["email"], name=args["name"], password=args["password"], ip_address=extract_remote_ip(request)
         )
 
-        return {"result": "success"}, 201
+        
+
+        return {"result": "success","app_id":app_id}, 201
 
 
 def get_setup_status():

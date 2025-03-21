@@ -59,6 +59,7 @@ class Provider(db.Model):  # type: ignore[name-defined]
     last_used = db.Column(db.DateTime, nullable=True)
 
     quota_type = db.Column(db.String(40), nullable=True, server_default=db.text("''::character varying"))
+    admin_user_id = db.Column(StringUUID, nullable=True)
     quota_limit = db.Column(db.BigInteger, nullable=True)
     quota_used = db.Column(db.BigInteger, default=0)
 
